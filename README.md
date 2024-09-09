@@ -10,21 +10,21 @@ URL Doughsy : https://valiza-nadya-doughsy.pbp.cs.ui.ac.id
 
  1. **Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).**
 
-    1. Membuat Repository dan Setup Environment
+    1. **Membuat Repository dan Setup Environment**
     - Membuat repository dan direktori baru sesuai dengan nama proyek
     - Menghubungkan direktori lokal ke repository menggunakan perintah `git add remote <url repository>`
     - Mengaktifkan Virtual Environment menggunakan `python3 -m venv env`
     - Membuat berkas requirements, menambahkan, dan menginstal dependencies yang dibutuhkan
 
 
-    2. Membuat Proyek Django
+    2. **Membuat Proyek Django**
     - Inisialisasi proyek baru menggunakan perintah `django-admin startproject projectname.`
     - Menambahkan host dari server yang diizinkan untuk mengakses aplikasi web pada `ALLOWED_HOSTS` pada `settings.py`
     - Buat aplikasi baru di dalam proyek menggunakan perintah `python manage.py startapp appname.`
     - Menambahkan aplikasi baru ke dalam daftar `INSTALLED_APPS` pada `settings.py`
 
 
-    3. Konfigurasi Model Dasar Aplikasi (models.py)
+    3. **Konfigurasi Model Dasar Aplikasi (models.py)**
     - Membuat model pada `models.py` di direktori aplikasi dengan mengidentifikasi kebutuhan aplikasi. Aplikasi Doughsy menggunakan model seperti berikut ini, 
     ```
     from django.db import models
@@ -48,7 +48,7 @@ URL Doughsy : https://valiza-nadya-doughsy.pbp.cs.ui.ac.id
     - Melakukan migrasi model setiap ada perubahan data menggunakan perintah `python manage.py makemigrations` dan `python manage.py migrate` untuk migrasi ke database lokal 
 
 
-    4. Mendefinisikan model pada `models.py` dan view pada `views.py`
+    4. **Mendefinisikan model pada `models.py` dan view pada `views.py`**
     - Implementasikan function view pada `views.py` sesuai dengan kebutuhan fitur aplikasi
     - Buat berkas template (HTML) untuk menampilkan data dari views menggunakan struktur kode Django. Berikut kode yang saya implementasikan pada aplikasi Doughsy,
     ```
@@ -62,12 +62,12 @@ URL Doughsy : https://valiza-nadya-doughsy.pbp.cs.ui.ac.id
     <p>{{ class }}<p>
     ```
 
-    5. Konfigurasi URL aplikasi dan URL proyek 
+    5. **Konfigurasi URL aplikasi dan URL proyek**
     - Membuat berkas `urls.py` pada direktori aplikasi dan mengimplementasikan 
     - Memodifikasi berkas `urls.py` pada direktori proyek dengan menambahkan rute URL yang mengarah ke tampilan aplikasi
 
 
-    6. Deployment and testing
+    6. **Deployment and testing**
     - Menjalankan proyek Django menggunakan perintah `python manage.py runserver`
     - Melakukan deploy aplikasi ke platform hosting (Pacil Web Service (PWS))
     - Melakukan testing dengan memodifikasi `tests.py` dan menjalankan perintah `python manage.py test`
