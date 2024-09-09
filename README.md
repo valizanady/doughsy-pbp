@@ -5,7 +5,7 @@ Nama : Valiza Nadya Jatikansha
 NPM : 2306240156
 
 Kelas : PBP B
-git a
+
 URL Doughsy : https://valiza-nadya-doughsy.pbp.cs.ui.ac.id 
 
  1. **Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).**
