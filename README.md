@@ -151,7 +151,7 @@ Referensi : https://medium.com/@yc.yugesh/django-web-development-framework-3a9ed
     `csrf_token` bekerja dengan menambahkan token unik ke setiap form yang dikirim ke server. Token ini kemudian diverifikasi oleh server untuk memastikan bahwa permintaan tersebut berasal dari sumber yang sah, yaitu dari form yang dihasilkan oleh aplikasi itu sendiri. Dengan cara ini, `csrf_token` mencegah penyerang membuat permintaan palsu atas nama pengguna yang sedang login, karena mereka tidak akan memiliki token yang valid untuk disertakan dalam permintaan.
 
 5. **Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).**
-    1. **Membuat Direktori Templates**: Membuat directory `templates` di dalam direktori terluar yang berisi file `base.html`.
+    1. **Membuat Direktori Templates**: Membuat directory `templates` di dalam direktori aplikasi Django yang berisi file `base.html``
     2. **Membuat Form:** Pertama, membuat `ProductForm` pada file `forms.py` di direktori proyek. Form ini akan digunakan untuk menambahkan data produk baru.
     3. **Menambahkan View untuk Form:** Membuat function `create_product_entry` pada `views.py`. Function ini menangani input dari form dan menyimpan data ke database jika form valid.
     4. **Menambahkan Template:** Membuat atau perbarui file HTML (`create_product_entry.html`) yang berisi form input sehingga pengguna dapat memasukkan data produk.
