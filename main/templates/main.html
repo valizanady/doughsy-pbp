@@ -1,4 +1,7 @@
-<h1>{{ appName }}</h1>
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Doughsy</h1>
 
 <h5>NPM: </h5>
 <p>{{ npm }}<p>
@@ -6,3 +9,37 @@
 <p>{{ name }}<p>
 <h5>Class: </h5>
 <p>{{ class }}<p>
+
+{% if not donut_entries %}
+<p>Belum ada data donut yang tersedia.</p>
+{% else %}
+<table>
+  <tr>
+    <th>Item Name</th>
+    <th>Category</th>
+    <th>Quantity</th>
+    <th>Price</th>
+    <th>Size</th>
+    <th>Topping</th>
+  </tr>
+
+  {% for donut in donut_entries %}
+  <tr>
+    <td>{{ donut.item_name }}</td>  
+    <td>{{ donut.category }}</td>
+    <td>{{ donut.quantity }}</td>  
+    <td>{{ donut.price }}</td>
+    <td>{{ donut.size }}</td>
+    <td>{{ donut.topping }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<br />
+
+<a href="{% url 'main:create_product_entry' %}">
+    <button>Add New Item</button>
+</a>  
+
+{% endblock %}
