@@ -1,8 +1,10 @@
+import datetime
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from django.shortcuts import render, redirect
 from main.forms import ProductForm
@@ -10,13 +12,14 @@ from main.models import Product
 
 @login_required(login_url='/login')
 def show_main(request):
-    donut_entries = Product.objects.all()
+    donut_entries = Product.objects.filter(user=request.user)
 
     context = {
         'npm': '2306240156',
-        'name': 'Valiza Nadya Jatikansha',
+        'name': request.user.username,
         'class': 'PBP B',
-        'donut_entries': donut_entries  
+        'donut_entries': donut_entries,
+        'last_login': request.COOKIES['last_login'],
     }
 
     return render(request, "main.html", context)
@@ -26,7 +29,9 @@ def create_product_entry(request):
     form = ProductForm(request.POST or None)
 
     if form.is_valid() and request.method == "POST":
-        form.save()
+        product_entry = form.save(commit=False)
+        product_entry.user = request.user
+        product_entry.save()
         return redirect('main:show_main')
 
     context = {'form': form}
@@ -65,9 +70,11 @@ def login_user(request):
       form = AuthenticationForm(data=request.POST)
 
       if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('main:show_main')
+        user = form.get_user()
+        login(request, user)
+        response = HttpResponseRedirect(reverse("main:show_main"))
+        response.set_cookie('last_login', str(datetime.datetime.now()))
+        return response
 
    else:
       form = AuthenticationForm(request)
@@ -76,4 +83,6 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    return redirect('main:login')
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
