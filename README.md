@@ -10,6 +10,7 @@ URL Doughsy : https://valiza-nadya-doughsy.pbp.cs.ui.ac.id
 
 - [Tugas 2](#tugas-2)
 - [Tugas 3](#tugas-3)
+- [Tugas 4](#tugas-4)
 
 ## Tugas Individu 2 <a id="tugas-2"></a>
 
@@ -192,3 +193,116 @@ Referensi : https://medium.com/@yc.yugesh/django-web-development-framework-3a9ed
 ![show_json_by_id](screenshot4.png)
 
 Referensi: https://portswigger.net/web-security/csrf
+
+## Tugas Individu 4 <a id="tugas-4"></a>
+
+1. **Apa perbedaan antara HttpResponseRedirect() dan redirect()**
+  `HttpResponseRedirect()` adalah metode yang lebih manual untuk mengarahkan pengguna ke URL tertentu, di mana URL harus disebutkan secara lengkap di dalam tanda kutip, seperti `return HttpResponseRedirect('/login/')`. Sedangkan, `redirect()` menawarkan cara yang lebih praktis dan fleksibel, cukup memberikan nama view dan Django akan otomatis mencari URL yang sesuai. Misalnya, dengan menggunakan `return redirect('login_user')`, jika URL sudah didefinisikan dengan nama `login_user`, Django akan mengarahkan pengguna ke URL yang terkait tanpa perlu menulis URL secara manual. Karena alasan kemudahan dan keterbacaan, banyak pengembang lebih memilih menggunakan `redirect()`, karena kode menjadi lebih bersih dan lebih mudah dipahami. 
+
+2. **Jelaskan cara kerja penghubungan model Product dengan User!**
+  1)**Mengimpor Model User dari `django.contrib.auth.models`**
+
+  Impor ini membuat model User tersedia untuk digunakan di model atau tampilan lain, sehingga produk dapat dihubungkan dengan pengguna tertentu.
+
+  2)**Menambahkan Field ForeignKey di Model Product**
+
+  Pada `models.py` Product, field ForeignKey dapat ditambahkan untuk membangun hubungan banyak-ke-satu dengan model User:
+
+  ```python
+  class Product(models.Model):
+      ...
+      user = models.ForeignKey(User, on_delete=models.CASCADE)
+      ...
+  ```
+
+  **Penjelasan:**
+
+  - **ForeignKey**: Mendefinisikan hubungan banyak-ke-satu di mana setiap produk terhubung dengan satu pengguna, tetapi satu pengguna dapat memiliki banyak produk.
+  - **on_delete=models.CASCADE**: Memastikan bahwa jika pengguna terkait dihapus, semua produk yang terhubung dengan pengguna tersebut juga akan dihapus. Perilaku ini membantu menjaga integritas referensial dalam basis data.
+
+  **Melakukan Migrations Model*
+
+  Setelah menambahkan field baru ke dalam model, perubahan harus direfleksikan dalam basis data dengan membuat dan menerapkan migrasi menggunakan:
+
+  ```bash
+  python manage.py makemigrations
+  python manage.py migrate
+  ```
+
+  **Penggunaan dalam Aplikasi**
+
+  Dengan menghubungkan model Product dengan model User, aplikasi utama dapat menyaring produk berdasarkan pengguna saat ini, memastikan bahwa hanya produk yang menjadi milik pengguna tersebut yang ditampilkan.
+
+  ```python
+  # views.py
+  @login_required(login_url='/login')
+  def show_main(request):
+      product_requests = Product.objects.filter(user=request.user)
+  ```
+
+
+3. **Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.**
+  - Authentication (Autentikasi): Proses memverifikasi identitas pengguna. Misalnya, saat pengguna memasukkan username dan password. Django menyediakan sistem autentikasi bawaan yang memungkinkan pengguna untuk mendaftar dan login melalui penggunaan UserCreationForm untuk registrasi dan AuthenticationForm untuk login.
+
+  - Authorization (Otorisasi): Setelah terverifikasi, proses ini menentukan akses pengguna. Misalnya, apa yang boleh mereka lihat atau lakukan di aplikasi. Django mengelola otorisasi menggunakan decorators seperti @login_required, yang memastikan bahwa hanya pengguna yang terautentikasi yang dapat mengakses fungsi tertentu.
+
+4. **Bagaimana Django mengingat pengguna yang telah login? Jelaskan kegunaan lain dari cookies dan apakah semua cookies aman digunakan?**
+  Django mengingat pengguna yang telah login dengan menyimpan informasi sesi di server dan mengirimkan cookie ke browser. Ketika pengguna login, Django membuat sesi baru dan mengaitkan ID sesi dengan pengguna, yang kemudian dikirim dalam bentuk cookie. Pada permintaan berikutnya, browser mengirimkan cookie tersebut, memungkinkan Django mengenali pengguna.
+
+  Selain itu, cookies juga digunakan untuk menyimpan preferensi pengguna, melacak aktivitas, dan analisis penggunaan situs. Namun, tidak semua cookies aman. Cookies sesi lebih aman dibandingkan cookies permanen, dan pengaturan seperti `HttpOnly` dan `Secure` dapat meningkatkan keamanan. Penggunaan cookies harus dikelola dengan hati-hati untuk melindungi privasi pengguna.
+
+5. **Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).**
+  1) **Mengimplementasikan Fungsi Registrasi, Login, dan Logout**: 
+    - **Registrasi**: Membuat function`register` pada `views.py` yang menggunakan `UserCreationForm` dari Django untuk menangani pendaftaran pengguna baru. Kemudian membuat template `register.html` pada direktori templates aplikasi. Setelah itu, menambahkan routing untuk register di `urls.py` agar halaman registrasi dapat diakses melalui URL yang spesifik.
+    - **Login**: Membuat function `login_user` pada `views.py` yang menggunakan `AuthenticationForm` untuk menangani autentikasi. Jika pengguna berhasil login, sesi pengguna diinisialisasi, dan cookie `last_login` diset dengan waktu login. Setelah itu, menambahkan routing untuk register di `urls.py` agar halaman login dapat diakses melalui URL yang spesifik.
+    - **Logout**: Membuat function `logout_user` pada `views.py` yang memanggil metode `logout` untuk mengakhiri sesi pengguna. Cookie `last_login` dihapus untuk memastikan sesi sebelumnya tidak lagi aktif, dan pengguna diarahkan kembali ke halaman login. Setelah itu, menambahkan routing untuk register di `urls.py`.
+
+  2) **Membuat Dua Akun Pengguna dan Dummy Data**: 
+    - Setelah fungsi registrasi dan login berfungsi, dua akun pengguna diuji dengan mendaftarkan pengguna baru melalui form registrasi. Untuk setiap akun, tiga entri dummy data dibuat dengan menggunakan form untuk menambahkan entri produk di aplikasi. Setiap entri produk secara otomatis dikaitkan dengan pengguna yang sedang login menggunakan `request.user`.
+
+  3) **Menghubungkan Model Product dengan User**: 
+    - Pada model `Product`, ditambahkan field `user` sebagai `ForeignKey` yang mengacu pada model `User`. Hal ini memungkinkan setiap produk terkait langsung dengan pengguna tertentu. 
+    - Pada view `create_product_entry`, ketika pengguna membuat entri baru, nilai `request.user` disimpan dalam field `user` produk sebelum disimpan ke database.
+    - Pada view `show_main`, produk yang ditampilkan difilter berdasarkan `request.user`, sehingga hanya produk milik pengguna yang sedang login yang muncul di halaman utama.
+
+  4) **Implementasi Fungsionalitas Cookie**: 
+    - **Menambahkan Cookie di `login_user`**:
+      Setelah login berhasil, simpan waktu login terakhir dengan cookie `last_login`.
+      ```python
+      if form.is_valid():
+          user = form.get_user()
+          login(request, user)
+          response = HttpResponseRedirect(reverse("main:show_main"))
+          response.set_cookie('last_login', str(datetime.datetime.now()))  # Menambahkan cookie
+          return response
+      ```
+    - **Menggunakan Cookie di `show_main`**:
+      Tambahkan nilai `last_login` dari cookie ke dalam konteks halaman.
+      ```python
+      context = {
+          'name': 'Pak Bepe',
+          'class': 'PBP D',
+          'npm': '2306123456',
+          'mood_entries': mood_entries,
+          'last_login': request.COOKIES.get('last_login'),  
+      }
+      ```
+    - **Mengubah `logout_user`**:
+      Menghapus cookie `last_login` saat pengguna logout untuk memastikan keamanan dan pengguna tidak bisa mengakses halaman utama tanpa login kembali.
+
+      ```python
+      def logout_user(request):
+          logout(request)
+          response = HttpResponseRedirect(reverse('main:login'))
+          response.delete_cookie('last_login')  
+          return response
+      ```
+
+    - **Menampilkan `last_login` di `main.html`**:
+     
+      ```html
+      <h5>Sesi terakhir login: {{ last_login }}</h5>  
+      ```
+   
+
+
