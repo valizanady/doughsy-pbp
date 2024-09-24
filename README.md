@@ -201,44 +201,36 @@ Referensi: https://portswigger.net/web-security/csrf
 
 2. **Jelaskan cara kerja penghubungan model Product dengan User!**
   1)**Mengimpor Model User dari `django.contrib.auth.models`**
-
-  Impor ini membuat model User tersedia untuk digunakan di model atau tampilan lain, sehingga produk dapat dihubungkan dengan pengguna tertentu.
+    Impor ini membuat model User tersedia untuk digunakan di model atau tampilan lain, sehingga produk dapat dihubungkan dengan pengguna tertentu.
 
   2)**Menambahkan Field ForeignKey di Model Product**
+    Pada `models.py` Product, field ForeignKey dapat ditambahkan untuk membangun hubungan banyak-ke-satu dengan model User:
+    ```python
+    class Product(models.Model):
+        ...
+        user = models.ForeignKey(User, on_delete=models.CASCADE)
+        ...
+    ```
+    - **ForeignKey**: Mendefinisikan hubungan banyak-ke-satu di mana setiap produk terhubung dengan satu pengguna, tetapi satu pengguna dapat memiliki banyak produk.
+    - **on_delete=models.CASCADE**: Memastikan bahwa jika pengguna terkait dihapus, semua produk yang terhubung dengan pengguna tersebut juga akan dihapus. Perilaku ini membantu menjaga integritas referensial dalam basis data.
 
-  Pada `models.py` Product, field ForeignKey dapat ditambahkan untuk membangun hubungan banyak-ke-satu dengan model User:
+  3) **Melakukan Migrations Model**:
+    Setelah menambahkan field baru ke dalam model, perubahan harus direfleksikan dalam basis data dengan membuat dan menerapkan migrasi menggunakan:
 
-  ```python
-  class Product(models.Model):
-      ...
-      user = models.ForeignKey(User, on_delete=models.CASCADE)
-      ...
-  ```
+    ```bash
+    python manage.py makemigrations
+    python manage.py migrate
+    ```
 
-  **Penjelasan:**
+  4) **Penggunaan dalam Aplikasi**
+    Dengan menghubungkan model Product dengan model User, aplikasi utama dapat menyaring produk berdasarkan pengguna saat ini, memastikan bahwa hanya produk yang menjadi milik pengguna tersebut yang ditampilkan.
 
-  - **ForeignKey**: Mendefinisikan hubungan banyak-ke-satu di mana setiap produk terhubung dengan satu pengguna, tetapi satu pengguna dapat memiliki banyak produk.
-  - **on_delete=models.CASCADE**: Memastikan bahwa jika pengguna terkait dihapus, semua produk yang terhubung dengan pengguna tersebut juga akan dihapus. Perilaku ini membantu menjaga integritas referensial dalam basis data.
-
-  **Melakukan Migrations Model*
-
-  Setelah menambahkan field baru ke dalam model, perubahan harus direfleksikan dalam basis data dengan membuat dan menerapkan migrasi menggunakan:
-
-  ```bash
-  python manage.py makemigrations
-  python manage.py migrate
-  ```
-
-  **Penggunaan dalam Aplikasi**
-
-  Dengan menghubungkan model Product dengan model User, aplikasi utama dapat menyaring produk berdasarkan pengguna saat ini, memastikan bahwa hanya produk yang menjadi milik pengguna tersebut yang ditampilkan.
-
-  ```python
-  # views.py
-  @login_required(login_url='/login')
-  def show_main(request):
-      product_requests = Product.objects.filter(user=request.user)
-  ```
+    ```python
+    # views.py
+    @login_required(login_url='/login')
+    def show_main(request):
+        product_requests = Product.objects.filter(user=request.user)
+    ```
 
 
 3. **Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.**
@@ -248,7 +240,7 @@ Referensi: https://portswigger.net/web-security/csrf
 
 4. **Bagaimana Django mengingat pengguna yang telah login? Jelaskan kegunaan lain dari cookies dan apakah semua cookies aman digunakan?**
   Django mengingat pengguna yang telah login dengan menyimpan informasi sesi di server dan mengirimkan cookie ke browser. Ketika pengguna login, Django membuat sesi baru dan mengaitkan ID sesi dengan pengguna, yang kemudian dikirim dalam bentuk cookie. Pada permintaan berikutnya, browser mengirimkan cookie tersebut, memungkinkan Django mengenali pengguna.
-
+  
   Selain itu, cookies juga digunakan untuk menyimpan preferensi pengguna, melacak aktivitas, dan analisis penggunaan situs. Namun, tidak semua cookies aman. Cookies sesi lebih aman dibandingkan cookies permanen, dan pengaturan seperti `HttpOnly` dan `Secure` dapat meningkatkan keamanan. Penggunaan cookies harus dikelola dengan hati-hati untuk melindungi privasi pengguna.
 
 5. **Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).**
@@ -276,6 +268,7 @@ Referensi: https://portswigger.net/web-security/csrf
           response.set_cookie('last_login', str(datetime.datetime.now()))  # Menambahkan cookie
           return response
       ```
+
     - **Menggunakan Cookie di `show_main`**:
       Tambahkan nilai `last_login` dari cookie ke dalam konteks halaman.
       ```python
@@ -287,6 +280,7 @@ Referensi: https://portswigger.net/web-security/csrf
           'last_login': request.COOKIES.get('last_login'),  
       }
       ```
+
     - **Mengubah `logout_user`**:
       Menghapus cookie `last_login` saat pengguna logout untuk memastikan keamanan dan pengguna tidak bisa mengakses halaman utama tanpa login kembali.
 
