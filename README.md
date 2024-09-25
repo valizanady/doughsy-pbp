@@ -250,20 +250,24 @@ Referensi: https://portswigger.net/web-security/csrf
 
 5. **Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).**
 
-  1)**Mengimplementasikan Fungsi Registrasi, Login, dan Logout**: 
+  1)**Mengimplementasikan Fungsi Registrasi, Login, dan Logout**:
+
       - **Registrasi**: Membuat function`register` pada `views.py` yang menggunakan `UserCreationForm` dari Django untuk menangani pendaftaran pengguna baru. Kemudian membuat template `register.html` pada direktori templates aplikasi. Setelah itu, menambahkan routing untuk register di `urls.py` agar halaman registrasi dapat diakses melalui URL yang spesifik.
       - **Login**: Membuat function `login_user` pada `views.py` yang menggunakan `AuthenticationForm` untuk menangani autentikasi. Jika pengguna berhasil login, sesi pengguna diinisialisasi, dan cookie `last_login` diset dengan waktu login. Setelah itu, menambahkan routing untuk register di `urls.py` agar halaman login dapat diakses melalui URL yang spesifik.
       - **Logout**: Membuat function `logout_user` pada `views.py` yang memanggil metode `logout` untuk mengakhiri sesi pengguna. Cookie `last_login` dihapus untuk memastikan sesi sebelumnya tidak lagi aktif, dan pengguna diarahkan kembali ke halaman login. Setelah itu, menambahkan routing untuk register di `urls.py`.
 
   2)**Membuat Dua Akun Pengguna dan Dummy Data**: 
+
       - Setelah fungsi registrasi dan login berfungsi, dua akun pengguna diuji dengan mendaftarkan pengguna baru melalui form registrasi. Untuk setiap akun, tiga entri dummy data dibuat dengan menggunakan form untuk menambahkan entri produk di aplikasi. Setiap entri produk secara otomatis dikaitkan dengan pengguna yang sedang login menggunakan `request.user`.
 
   3)**Menghubungkan Model Product dengan User**: 
+  
       - Pada model `Product`, ditambahkan field `user` sebagai `ForeignKey` yang mengacu pada model `User`. Hal ini memungkinkan setiap produk terkait langsung dengan pengguna tertentu. 
       - Pada view `create_product_entry`, ketika pengguna membuat entri baru, nilai `request.user` disimpan dalam field `user` produk sebelum disimpan ke database.
       - Pada view `show_main`, produk yang ditampilkan difilter berdasarkan `request.user`, sehingga hanya produk milik pengguna yang sedang login yang muncul di halaman utama.
 
   4)**Implementasi Fungsionalitas Cookie**: 
+  
       - **Menambahkan Cookie di `login_user`**:
         Setelah login berhasil, simpan waktu login terakhir dengan cookie `last_login`.
         ```python
