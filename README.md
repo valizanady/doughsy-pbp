@@ -203,37 +203,37 @@ Referensi: https://portswigger.net/web-security/csrf
 
 2. **Jelaskan cara kerja penghubungan model Product dengan User!**
   
-  1)**Mengimpor Model User dari `django.contrib.auth.models`**
-    Impor ini membuat model User tersedia untuk digunakan di model atau tampilan lain, sehingga produk dapat dihubungkan dengan pengguna tertentu.
+    1)**Mengimpor Model User dari `django.contrib.auth.models`**
+      Impor ini membuat model User tersedia untuk digunakan di model atau tampilan lain, sehingga produk dapat dihubungkan dengan pengguna tertentu.
 
-  2)**Menambahkan Field ForeignKey di Model Product**
-    Pada `models.py` Product, field ForeignKey dapat ditambahkan untuk membangun hubungan banyak-ke-satu dengan model User:
-    ```python
-    class Product(models.Model):
-        ...
-        user = models.ForeignKey(User, on_delete=models.CASCADE)
-        ...
-    ```
-    - **ForeignKey**: Mendefinisikan hubungan banyak-ke-satu di mana setiap produk terhubung dengan satu pengguna, tetapi satu pengguna dapat memiliki banyak produk.
-    - **on_delete=models.CASCADE**: Memastikan bahwa jika pengguna terkait dihapus, semua produk yang terhubung dengan pengguna tersebut juga akan dihapus. Perilaku ini membantu menjaga integritas referensial dalam basis data.
+    2)**Menambahkan Field ForeignKey di Model Product**
+      Pada `models.py` Product, field ForeignKey dapat ditambahkan untuk membangun hubungan banyak-ke-satu dengan model User:
+      ```
+      class Product(models.Model):
+          ...
+          user = models.ForeignKey(User, on_delete=models.CASCADE)
+          ...
+      ```
+      - **ForeignKey**: Mendefinisikan hubungan banyak-ke-satu di mana setiap produk terhubung dengan satu pengguna, tetapi satu pengguna dapat memiliki banyak produk.
+      - **on_delete=models.CASCADE**: Memastikan bahwa jika pengguna terkait dihapus, semua produk yang terhubung dengan pengguna tersebut juga akan dihapus. Perilaku ini membantu menjaga integritas referensial dalam basis data.
 
-  3)**Melakukan Migrations Model**:
-    Setelah menambahkan field baru ke dalam model, perubahan harus direfleksikan dalam basis data dengan membuat dan menerapkan migrasi menggunakan:
+    3)**Melakukan Migrations Model**:
+      Setelah menambahkan field baru ke dalam model, perubahan harus direfleksikan dalam basis data dengan membuat dan menerapkan migrasi menggunakan:
 
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    ```
+      ```
+      python manage.py makemigrations
+      python manage.py migrate
+      ```
 
-  4)**Penggunaan dalam Aplikasi**
-    Dengan menghubungkan model Product dengan model User, aplikasi utama dapat menyaring produk berdasarkan pengguna saat ini, memastikan bahwa hanya produk yang menjadi milik pengguna tersebut yang ditampilkan.
+    4)**Penggunaan dalam Aplikasi**
+      Dengan menghubungkan model Product dengan model User, aplikasi utama dapat menyaring produk berdasarkan pengguna saat ini, memastikan bahwa hanya produk yang menjadi milik pengguna tersebut yang ditampilkan.
 
-    ```python
-    # views.py
-    @login_required(login_url='/login')
-    def show_main(request):
-        product_requests = Product.objects.filter(user=request.user)
-    ```
+      ```
+      # views.py
+      @login_required(login_url='/login')
+      def show_main(request):
+          product_requests = Product.objects.filter(user=request.user)
+      ```
 
 
 3. **Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.**
@@ -253,7 +253,9 @@ Referensi: https://portswigger.net/web-security/csrf
   1)**Mengimplementasikan Fungsi Registrasi, Login, dan Logout**:
 
       - **Registrasi**: Membuat function`register` pada `views.py` yang menggunakan `UserCreationForm` dari Django untuk menangani pendaftaran pengguna baru. Kemudian membuat template `register.html` pada direktori templates aplikasi. Setelah itu, menambahkan routing untuk register di `urls.py` agar halaman registrasi dapat diakses melalui URL yang spesifik.
+
       - **Login**: Membuat function `login_user` pada `views.py` yang menggunakan `AuthenticationForm` untuk menangani autentikasi. Jika pengguna berhasil login, sesi pengguna diinisialisasi, dan cookie `last_login` diset dengan waktu login. Setelah itu, menambahkan routing untuk register di `urls.py` agar halaman login dapat diakses melalui URL yang spesifik.
+      
       - **Logout**: Membuat function `logout_user` pada `views.py` yang memanggil metode `logout` untuk mengakhiri sesi pengguna. Cookie `last_login` dihapus untuk memastikan sesi sebelumnya tidak lagi aktif, dan pengguna diarahkan kembali ke halaman login. Setelah itu, menambahkan routing untuk register di `urls.py`.
 
   2)**Membuat Dua Akun Pengguna dan Dummy Data**: 
@@ -263,14 +265,16 @@ Referensi: https://portswigger.net/web-security/csrf
   3)**Menghubungkan Model Product dengan User**: 
   
       - Pada model `Product`, ditambahkan field `user` sebagai `ForeignKey` yang mengacu pada model `User`. Hal ini memungkinkan setiap produk terkait langsung dengan pengguna tertentu. 
+
       - Pada view `create_product_entry`, ketika pengguna membuat entri baru, nilai `request.user` disimpan dalam field `user` produk sebelum disimpan ke database.
+
       - Pada view `show_main`, produk yang ditampilkan difilter berdasarkan `request.user`, sehingga hanya produk milik pengguna yang sedang login yang muncul di halaman utama.
 
   4)**Implementasi Fungsionalitas Cookie**: 
-  
-      - **Menambahkan Cookie di `login_user`**:
+
+      - Menambahkan Cookie di `login_user`:
         Setelah login berhasil, simpan waktu login terakhir dengan cookie `last_login`.
-        ```python
+        ```
         if form.is_valid():
             user = form.get_user()
             login(request, user)
@@ -279,9 +283,9 @@ Referensi: https://portswigger.net/web-security/csrf
             return response
         ```
 
-      - **Menggunakan Cookie di `show_main`**:
+      - Menggunakan Cookie di `show_main`:
         Tambahkan nilai `last_login` dari cookie ke dalam konteks halaman.
-        ```python
+        ```
         context = {
             'name': 'Pak Bepe',
             'class': 'PBP D',
@@ -291,10 +295,10 @@ Referensi: https://portswigger.net/web-security/csrf
         }
         ```
 
-      - **Mengubah `logout_user`**:
+      - Mengubah `logout_user`:
         Menghapus cookie `last_login` saat pengguna logout untuk memastikan keamanan dan pengguna tidak bisa mengakses halaman utama tanpa login kembali.
 
-        ```python
+        ```
         def logout_user(request):
             logout(request)
             response = HttpResponseRedirect(reverse('main:login'))
@@ -302,9 +306,9 @@ Referensi: https://portswigger.net/web-security/csrf
             return response
         ```
 
-      - **Menampilkan `last_login` di `main.html`**:
+      - Menampilkan `last_login` di `main.html`:
       
-        ```html
+        ```
         <h5>Sesi terakhir login: {{ last_login }}</h5>  
         ```
     
