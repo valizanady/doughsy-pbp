@@ -6,7 +6,7 @@ NPM : 2306240156
 
 Kelas : PBP B
 
-URL Doughsy : https://valiza-nadya-doughsy.pbp.cs.ui.ac.id 
+URL Doughsy : http://valiza-nadya-doughsy.pbp.cs.ui.ac.id 
 
 - [Tugas 2](#tugas-2)
 - [Tugas 3](#tugas-3)
@@ -357,70 +357,70 @@ Referensi: https://portswigger.net/web-security/csrf
 
 5. **Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial)!** 
     1) Implementasi Fungsi untuk Menghapus dan Mengedit Produk
-    - **Edit Produk**: Implementasi fungsi edit biasanya melibatkan dua langkah utama:
-     1. Mengambil data produk yang ada untuk ditampilkan dalam form.
-     2. Memproses form dan memperbarui data produk di basis data.
-     Misalnya, kita dapat menggunakan Django Forms untuk mengambil data produk yang ada, menampilkannya dalam form, dan kemudian menyimpan perubahan dengan metode POST pada form. Pastikan produk yang dipilih dapat diakses melalui `id` dan memperbarui produk yang sesuai dalam database setelah perubahan dilakukan.
+        - **Edit Produk**: Implementasi fungsi edit biasanya melibatkan dua langkah utama:
+        1. Mengambil data produk yang ada untuk ditampilkan dalam form.
+        2. Memproses form dan memperbarui data produk di basis data.
+        Misalnya, kita dapat menggunakan Django Forms untuk mengambil data produk yang ada, menampilkannya dalam form, dan kemudian menyimpan perubahan dengan metode POST pada form. Pastikan produk yang dipilih dapat diakses melalui `id` dan memperbarui produk yang sesuai dalam database setelah perubahan dilakukan.
 
-     ```
-      def edit_product(request, id):
-      product = Product.objects.get(pk = id)
+        ```
+          def edit_product(request, id):
+          product = Product.objects.get(pk = id)
 
-      form = ProductForm(request.POST or None, instance=product)
+          form = ProductForm(request.POST or None, instance=product)
 
-      if form.is_valid() and request.method == "POST":
-          form.save()
-          return HttpResponseRedirect(reverse('main:show_main'))
+          if form.is_valid() and request.method == "POST":
+              form.save()
+              return HttpResponseRedirect(reverse('main:show_main'))
 
-      context = {'form': form}
-      return render(request, "edit_product.html", context)
-     ```
-     Function tersebut ditambahkan pada `views.py`.
+          context = {'form': form}
+          return render(request, "edit_product.html", context)
+        ```
+        Function tersebut ditambahkan pada `views.py`.
 
-   - **Hapus Produk**: Untuk menghapus produk, kita dapat membuat tombol delete pada card produk. Function server-side untuk penghapusan produk dapat terlihat seperti ini:
+      - **Hapus Produk**: Untuk menghapus produk, kita dapat membuat tombol delete pada card produk. Function server-side untuk penghapusan produk dapat terlihat seperti ini:
 
-     ```
-      def delete_product(request, id):
-      product = Product.objects.get(pk = id)
-      product.delete()
-      return HttpResponseRedirect(revere('main:show_main'))
-     ```
-    Function tersebut ditambahkan pada `views.py`.
+        ```
+          def delete_product(request, id):
+          product = Product.objects.get(pk = id)
+          product.delete()
+          return HttpResponseRedirect(revere('main:show_main'))
+        ```
+        Function tersebut ditambahkan pada `views.py`.
 
     2) Implementasi Design pada Template HTML
-    - **Halaman Login, Register, dan Tambah Produk**:
-     Saya menggunakan **Tailwind CSS** atau **Bootstrap** untuk memberikan tampilan yang menarik. 
-     - **Warna**: Tambahkan palet warna yang selaras dengan brand aplikasi. Misalnya, gunakan warna-warna dengan hex coe seperti `bg-[#CE1B5A]` untuk tombol dan `text-white` untuk teks.
-     - **Form**: Gunakan utility class dari Tailwind atau komponen Bootstrap seperti `form-group`, `input-group`, `rounded`, `shadow` untuk memperindah form.
-     - **Responsivitas**: Pastikan halaman login dan register responsif dengan menambahkan breakpoint seperti `sm:text-base` dan `md:text-lg`.
+        - **Halaman Login, Register, dan Tambah Produk**:
+        Saya menggunakan **Tailwind CSS** atau **Bootstrap** untuk memberikan tampilan yang menarik. 
+        - **Warna**: Tambahkan palet warna yang selaras dengan brand aplikasi. Misalnya, gunakan warna-warna dengan hex coe seperti `bg-[#CE1B5A]` untuk tombol dan `text-white` untuk teks.
+        - **Form**: Gunakan utility class dari Tailwind atau komponen Bootstrap seperti `form-group`, `input-group`, `rounded`, `shadow` untuk memperindah form.
+        - **Responsivitas**: Pastikan halaman login dan register responsif dengan menambahkan breakpoint seperti `sm:text-base` dan `md:text-lg`.
 
     3) Implementasi Halaman Daftar Product
-    - **Tampilan Produk Kosong**: Jika tidak ada produk dalam database, tampilkan pesan informatif beserta gambar yang relevan.
-     ```
-     <div class="flex flex-col items-center">
-          <img src="{% static 'images/no-donuts.png' %}" alt="No Donuts" class="h-15 w-10 mb-4"/> 
-          <p class="text-center text-gray-500 text-lg">You don't have any donuts yet.</p>
-      </div>
-     ```
+        - **Tampilan Produk Kosong**: Jika tidak ada produk dalam database, tampilkan pesan informatif beserta gambar yang relevan.
+        ```
+        <div class="flex flex-col items-center">
+              <img src="{% static 'images/no-donuts.png' %}" alt="No Donuts" class="h-15 w-10 mb-4"/> 
+              <p class="text-center text-gray-500 text-lg">You don't have any donuts yet.</p>
+          </div>
+        ```
 
-   - **Tampilan Produk Tersimpan**: Jika sudah ada produk yang tersimpan, tampilkan setiap produk dalam card yang menarik. Setiap card harus memiliki tombol untuk mengedit dan menghapus produk, dengan styling yang konsisten. Contoh:
-     ```
-     <div class="p-4">
-      <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ donut.item_name }}</h3>
-      <p class="text-gray-600 mb-4">{{ donut.description|truncatechars:100 }}</p>
-      <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
-          <span>Topping: <span class="font-semibold">{{ donut.topping }}</span></span>
-          <span>Qty: <span class="font-semibold">{{ donut.quantity }}</span></span>
-      </div>
-      <div class="flex space-x-2">
-          <a href="{% url 'main:edit_product' donut.pk %}" class="flex-1 bg-blue-500 text-white text-center py-2 rounded-md hover:bg-blue-600 transition duration-300">Edit</a>
-          <a href="{% url 'main:delete_product' donut.pk %}" onclick="return confirm('Are you sure you want to delete this item?');" class="flex-1 bg-red-500 text-white text-center py-2 rounded-md hover:bg-red-600 transition duration-300">Delete</a>
-      </div>
-    </div>
-     ```
+        - **Tampilan Produk Tersimpan**: Jika sudah ada produk yang tersimpan, tampilkan setiap produk dalam card yang menarik. Setiap card harus memiliki tombol untuk mengedit dan menghapus produk, dengan styling yang konsisten. Contoh:
+          ```
+          <div class="p-4">
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ donut.item_name }}</h3>
+            <p class="text-gray-600 mb-4">{{ donut.description|truncatechars:100 }}</p>
+            <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
+                <span>Topping: <span class="font-semibold">{{ donut.topping }}</span></span>
+                <span>Qty: <span class="font-semibold">{{ donut.quantity }}</span></span>
+            </div>
+            <div class="flex space-x-2">
+                <a href="{% url 'main:edit_product' donut.pk %}" class="flex-1 bg-blue-500 text-white text-center py-2 rounded-md hover:bg-blue-600 transition duration-300">Edit</a>
+                <a href="{% url 'main:delete_product' donut.pk %}" onclick="return confirm('Are you sure you want to delete this item?');" class="flex-1 bg-red-500 text-white text-center py-2 rounded-md hover:bg-red-600 transition duration-300">Delete</a>
+            </div>
+          </div>
+          ```
 
      4) Melakukan Testing terhadap Responsiveness
-     Setelah selesai mengimplementasikan, saya melakukan pengujian tampilan pada berbagai ukuran layar untuk memastikan tampilan tetap responsif.
+        Setelah selesai mengimplementasikan, saya melakukan pengujian tampilan pada berbagai ukuran layar untuk memastikan tampilan tetap responsif.
 
-
+Referensi: https://sabe.io/classes/css/css-box-model-padding-border-margin
 
