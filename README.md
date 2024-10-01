@@ -388,13 +388,12 @@ Referensi: https://portswigger.net/web-security/csrf
         Function tersebut ditambahkan pada `views.py`.
 
     2) Implementasi Design pada Template HTML
-        - **Halaman Login, Register, dan Tambah Produk**:
-        Saya menggunakan **Tailwind CSS** atau **Bootstrap** untuk memberikan tampilan yang menarik. 
+        - **Halaman Login, Register, dan Tambah Produk**: Saya menggunakan **Tailwind CSS** untuk memberikan tampilan yang menarik. 
         - **Warna**: Tambahkan palet warna yang selaras dengan brand aplikasi. Misalnya, gunakan warna-warna dengan hex coe seperti `bg-[#CE1B5A]` untuk tombol dan `text-white` untuk teks.
         - **Form**: Gunakan utility class dari Tailwind atau komponen Bootstrap seperti `form-group`, `input-group`, `rounded`, `shadow` untuk memperindah form.
         - **Responsivitas**: Pastikan halaman login dan register responsif dengan menambahkan breakpoint seperti `sm:text-base` dan `md:text-lg`.
 
-    3) Implementasi Halaman Daftar Product
+    4) Implementasi Halaman Daftar Product
         - **Tampilan Produk Kosong**: Jika tidak ada produk dalam database, tampilkan pesan informatif beserta gambar yang relevan.
         ```
         <div class="flex flex-col items-center">
@@ -419,7 +418,19 @@ Referensi: https://portswigger.net/web-security/csrf
           </div>
           ```
 
-     4) Melakukan Testing terhadap Responsiveness
+    5) Membuat Komponen Navbar
+        Pada `navbar,html`, saya menggunakan class Tailwind seperti bg-[#002b43], text-white untuk tampilan navigasi.Saya menambahkan tombol mobile menu menggunakan Tailwind untuk memastikan navbar tetap terlihat baik pada layar kecil dan besar. Saya juga menambahkan code dibawah ini pada `navbar,html` agar ketika ombol diklik, menu yang tersembunyi (hidden) akan muncul, dan ketika diklik lagi, menu tersebut akan tersembunyi kembali.
+        ```
+            // Toggle mobile menu
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        ```
+
+    6) Melakukan Testing terhadap Responsiveness
         Setelah selesai mengimplementasikan, saya melakukan pengujian tampilan pada berbagai ukuran layar untuk memastikan tampilan tetap responsif.
 
 Referensi: https://sabe.io/classes/css/css-box-model-padding-border-margin
