@@ -1,50 +1,50 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Doughsy</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+{% endblock meta %}
 
 {% block content %}
-<h1>Doughsy</h1>
+<div class="bg-gray-50 min-h-screen font-sans">
+    {% include 'navbar.html' %}
 
-<h5>NPM: </h5>
-<p>{{ npm }}<p>
-<h5>Name: </h5>
-<p>{{ name }}<p>
-<h5>Class: </h5>
-<p>{{ class }}<p>
+    <!-- Hero Section -->
+    <section class="relative h-screen">
+        <img src="{% static 'images/donutlanding3.png' %}" alt="Delicious Donuts" class="w-full h-full object-cover">
+    </section>
 
-{% if not donut_entries %}
-<p>Belum ada data donut yang tersedia.</p>
-{% else %}
-<table>
-  <tr>
-    <th>Item Name</th>
-    <th>Category</th>
-    <th>Quantity</th>
-    <th>Price</th>
-    <th>Size</th>
-    <th>Topping</th>
-  </tr>
+    <!-- About the Kitchen Section -->
+    {% include 'card_info.html' %}
 
-  {% for donut in donut_entries %}
-  <tr>
-    <td>{{ donut.item_name }}</td>  
-    <td>{{ donut.category }}</td>
-    <td>{{ donut.quantity }}</td>  
-    <td>{{ donut.price }}</td>
-    <td>{{ donut.size }}</td>
-    <td>{{ donut.topping }}</td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
-
-<br />
-
-<a href="{% url 'main:create_product_entry' %}">
-    <button>Add New Item</button>
-</a>  
-
-<a href="{% url 'main:logout' %}">
-  <button>Logout</button>
-</a>
-
-<h5>Sesi terakhir login: {{ last_login }}</h5>
-{% endblock %}
+    <!-- Featured Donuts Section -->
+    <section id="featured-donuts" class="py-16 bg-[#FFF1D3]">
+        <div class="container mx-auto px-4">
+          <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold">Here’s a quick glance at your ordered donuts</h1>
+            <p class="text-xl text-gray-600 mt-2">Craving for more? Add new ones anytime!</p>
+          </div>
+            
+            {% if donut_entries %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                    {% for donut in donut_entries %}
+                        <div class="p-0 m-0 w-full">
+                            {% include 'card_donut.html' with donut=donut %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="flex flex-col items-center">
+                    <img src="{% static 'images/no-donuts.png' %}" alt="No Donuts" class="h-15 w-10 mb-4"/> <!-- Pastikan path gambar benar -->
+                    <p class="text-center text-gray-500 text-lg">You don't have any donuts yet.</p>
+                </div>
+            {% endif %}
+            
+            <div class="text-center bg-[#FFF1D3]  mt-12">
+                <a href="{% url 'main:create_product_entry' %}" class="bg-[#CE1B5A] text-white py-3 px-8 rounded-full text-lg font-semibold hover:bg-pink-600 transition duration-300">Add New Donut</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock content %}

@@ -1,0 +1,63 @@
+/* Gaya untuk input, textarea, dan select dalam form */
+.form-style form input,
+.form-style form textarea,
+.form-style form select {
+    @apply mt-1 block w-full rounded-md shadow-sm; /* Menggunakan utility classes */
+    padding: 0.5rem; /* Memberikan padding yang nyaman */
+    border: 2px solid #D4B2A9; /* Border dengan warna abu-abu muda */
+    border-radius: 0.375rem; /* Membuat sudut rounded */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Transisi yang halus */
+}
+
+/* Gaya saat elemen dalam fokus */
+.form-style form input:focus,
+.form-style form textarea:focus,
+.form-style form select:focus {
+    outline: none; /* Menghilangkan outline default */
+    border-color: #674ea7; /* Mengubah warna border saat fokus */
+    box-shadow: 0 0 0 3px #674ea7; /* Menambahkan bayangan saat fokus */
+}
+
+/* Animasi shine */
+@keyframes shine {
+    0% { background-position: -200% 0; } /* Awal animasi */
+    100% { background-position: 200% 0; } /* Akhir animasi */
+}
+
+/* Gaya untuk elemen yang menggunakan animasi shine */
+.animate-shine {
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.3)); /* Gradient latar belakang */
+    background-size: 200% 100%; /* Ukuran latar belakang */
+    animation: shine 3s infinite; /* Menjalankan animasi shine secara berulang */
+}
+
+/* Kelas tambahan untuk menyesuaikan tampilan dropdown */
+select {
+    @apply pr-10 bg-white; /* Menggunakan utility classes */
+}
+
+/* Styling untuk card produk */
+.card {
+    background-color: #FFF1D3; /* Warna latar belakang untuk card */
+    border: 2px solid #D4B2A9; /* Border dengan warna yang cocok */
+    border-radius: 0.5rem; /* Membuat sudut rounded */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bayangan halus */
+    transition: transform 0.3s ease; /* Transisi saat hover */
+}
+
+.card:hover {
+    transform: scale(1.05); /* Zoom saat hover */
+}
+
+/* Styling untuk tombol */
+.btn {
+    background-color: #674ea7; /* Warna latar belakang tombol */
+    color: #FFFFFF; /* Warna teks tombol */
+    padding: 0.5rem 1rem; /* Padding tombol */
+    border-radius: 0.375rem; /* Sudut rounded */
+    transition: background-color 0.3s ease; /* Transisi warna latar belakang */
+}
+
+.btn:hover {
+    background-color: #5a4a94; /* Warna saat hover */
+}

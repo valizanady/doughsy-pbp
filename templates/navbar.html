@@ -1,0 +1,68 @@
+<!-- Navbar -->
+<nav class="bg-[#002b43] text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <!-- Logo -->
+            <div class="flex-shrink-0 flex items-center">
+                <a href="{% url 'main:show_main' %}" class="font-bold text-xl">Doughsy</a>
+            </div>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="{% url 'main:show_main' %}" class="hover:text-pink-300 font-thin">Home</a>
+                <a href="#" class="hover:text-pink-300 font-thin">Products</a>
+                <a href="#" class="hover:text-pink-300 font-thin">Categories</a>
+                <a href="#" class="hover:text-pink-300 font-thin">Cart</a>
+                {% if user.is_authenticated %}
+                    <span class="text-white font-bold ml-4">Welcome, {{ user.username }}</span>
+                    <a href="{% url 'main:logout' %}" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded">
+                        Logout
+                    </a>
+                {% else %}
+                    <a href="{% url 'main:login' %}" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded">
+                        Login
+                    </a>
+                {% endif %}
+            </div>
+            
+            <!-- Mobile menu button -->
+            <div class="md:hidden flex items-center">
+                <button id="mobile-menu-button" class="text-gray-300 hover:text-white focus:outline-none focus:text-white">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden bg-[#001b29]">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="{% url 'main:show_main' %}" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 hover:text-white">Home</a>
+            <a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 hover:text-white">Products</a>
+            <a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 hover:text-white">Categories</a>
+            <a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 hover:text-white">Cart</a>
+            {% if user.is_authenticated %}
+                <span class="block px-3 py-2 text-base font-medium text-[#FFF1D3] font-bold">Welcome, {{ user.username }}</span>
+                <a href="{% url 'main:logout' %}" class="block px-3 py-2 rounded-md text-base font-medium bg-pink-600 hover:bg-pink-700 text-white text-center">
+                    Logout
+                </a>
+            {% else %}
+                <a href="{% url 'main:login' %}" class="block px-3 py-2 rounded-md text-base font-medium bg-pink-600 hover:bg-pink-700 text-white text-center">
+                    Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Toggle mobile menu
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+</script>
