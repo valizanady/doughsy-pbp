@@ -9,16 +9,17 @@ from django.core import serializers
 from django.shortcuts import render, redirect, reverse
 from main.forms import ProductForm
 from main.models import Product
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
 
 @login_required(login_url='/login')
 def show_main(request):
-    donut_entries = Product.objects.filter(user=request.user)
 
     context = {
         'npm': '2306240156',
         'name': request.user.username,
         'class': 'PBP B',
-        'donut_entries': donut_entries,
         'last_login': request.COOKIES['last_login'],
     }
 
@@ -37,12 +38,39 @@ def create_product_entry(request):
     context = {'form': form}
     return render(request, "create_product_entry.html", context)
 
+@csrf_exempt
+@require_POST
+def add_product_entry_ajax(request):
+    product_name = strip_tags(request.POST.get("product_name"))
+    product_description = strip_tags(request.POST.get("description"))
+    product_price = strip_tags(request.POST.get("price"))
+    category = strip_tags(request.POST.get("category"))
+    topping = strip_tags(request.POST.get("topping"))
+    size = strip_tags(request.POST.get("size"))
+    quantity = strip_tags(request.POST.get("quantity"))
+    user = request.user
+
+    # Creating a new product entry
+    new_product = Product(
+        item_name=product_name, 
+        description=product_description,
+        price=product_price,
+        category=category,
+        topping=topping,
+        size=size,
+        quantity=quantity,
+        user=user
+    )
+    new_product.save()
+
+    return HttpResponse(b"CREATED", status=201)
+
 def show_xml(request):
-    data = Product.objects.all()
+    data = Product.objects.filter(user=request.user)
     return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
 
 def show_json(request):
-    data = Product.objects.all()
+    data = Product.objects.filter(user=request.user)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
 def show_xml_by_id(request, id):
@@ -75,6 +103,8 @@ def login_user(request):
         response = HttpResponseRedirect(reverse("main:show_main"))
         response.set_cookie('last_login', str(datetime.datetime.now()))
         return response
+      else:
+          messages.error(request, "Invalid username or password. Please try again.")
 
    else:
       form = AuthenticationForm(request)

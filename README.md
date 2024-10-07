@@ -12,6 +12,7 @@ URL Doughsy : http://valiza-nadya-doughsy.pbp.cs.ui.ac.id
 - [Tugas 3](#tugas-3)
 - [Tugas 4](#tugas-4)
 - [Tugas 5](#tugas-5)
+- [Tugas 6](#tugas-6)
 
 ## Tugas Individu 2 <a id="tugas-2"></a>
 
@@ -439,4 +440,207 @@ Referensi: https://portswigger.net/web-security/csrf
         Setelah selesai mengimplementasikan, saya melakukan pengujian tampilan pada berbagai ukuran layar untuk memastikan tampilan tetap responsif.
 
 Referensi: https://sabe.io/classes/css/css-box-model-padding-border-margin
+
+## Tugas Individu 6 <a id="tugas-6"></a>
+
+1. **Jelaskan manfaat dari penggunaan JavaScript dalam pengembangan aplikasi web!**
+
+    - **Interaktif**
+      JavaScript membuat elemen di halaman web jadi lebih responsif. Misalnya, dapat memeriksa apakah form diisi dengan benar atau menampilkan pesan langsung ketika tombol ditekan. Dengan begitu, pengguna mendapat tanggapan instan tanpa harus menunggu, yang membuat pengalaman pengguna lebih nyaman.
+
+    - **Mengubah Tampilan Halaman Web**
+      JavaScript memungkinkan developer mengubah isi dan tampilan halaman web secara langsung, tanpa harus reload. Misalnya, dapat menambah, menghapus, atau mengedit elemen di halaman saat pengguna melakukan sesuatu, sehingga halaman bisa berubah sesuai dengan interaksi yang terjadi.
+
+    - **Animasi dan Efek Visual**
+      JavaScript dapat dipakai untuk membuat animasi dan efek visual di halaman web, seperti efek transisi atau perubahan warna saat pengguna mengarahkan kursor. Hal tersebut dapat membuat tampilan web jadi lebih menarik dan interaktif.
+
+    - **Mengambil dan Mengirim Data**
+      JavaScript dapat digunakan untuk mengambil data dari server atau mengirim data tanpa harus reload halaman. Jadi, data bisa di-update atau ditampilkan langsung tanpa gangguan, membuat halaman web terasa lebih cepat dan lancar saat digunakan.
+
+      **Contoh di Kode:**
+      - **AJAX GET:** Fungsi `getProductEntries()` dan `refreshProductEntries()` digunakan untuk mengambil data produk dari server dan menampilkannya secara dinamis dalam elemen HTML.
+      - **AJAX POST:** Saat form di-submit, fungsi `addProductEntry()` mengirimkan data ke server melalui `fetch()` tanpa merefresh halaman.
+
+      
+
+2. **Jelaskan fungsi dari penggunaan await ketika kita menggunakan fetch()! Apa yang akan terjadi jika kita tidak menggunakan await**
+
+    Fungsi `await` digunakan untuk menunggu hasil dari operasi asynchronous, seperti `fetch()` yang merupakan request ke server. Dengan menggunakan `await`, JavaScript akan menunggu hingga permintaan tersebut selesai dan hasilnya dapat langsung digunakan. Tanpa `await`, JavaScript tidak akan menunggu hasil dari `fetch()` dan akan langsung melanjutkan eksekusi kode berikutnya. Hal ini dapat menyebabkan masalah karena kode mungkin akan mencoba memanipulasi data yang belum diterima atau belum tersedia dari server.
+
+3. **Mengapa kita perlu menggunakan decorator csrf_exempt pada view yang akan digunakan untuk AJAX POST?**
+
+    Decorator `csrf_exempt` digunakan pada view yang menangani **AJAX POST** untuk mengecualikan view tersebut dari pemeriksaan CSRF (Cross-Site Request Forgery). Secara default, Django melindungi semua request POST dengan memeriksa token CSRF untuk mencegah serangan CSRF. Namun, jika AJAX request tidak menyertakan token CSRF atau jika API endpoint dibuat tanpa token, permintaan akan ditolak oleh Django.Penggunaan `csrf_exempt` memungkinkan request POST dilakukan tanpa pemeriksaan CSRF, sehingga membuat penanganan request AJAX menjadi lebih mudah. Namun, hal ini mengurangi tingkat keamanan, jadi sebaiknya hanya diterapkan jika token CSRF tidak bisa disertakan, atau jika view tersebut benar-benar aman dari potensi serangan. 
+
+
+4. **Pada tutorial PBP minggu ini, pembersihan data input pengguna dilakukan di belakang (backend) juga. Mengapa hal tersebut tidak dilakukan di frontend saja?** 
+
+    Meskipun kita bisa melakukan validasi di frontend dengan JavaScript (misalnya memeriksa apakah semua field form sudah diisi), validasi di backend sangat penting untuk memastikan keamanan dan integritas data. Ini karena validasi di frontend bisa di-bypass oleh pengguna yang tidak jujur dengan mematikan JavaScript atau memodifikasi request. 
+
+    Dengan melakukan validasi di backend, kita memastikan bahwa semua data yang masuk ke server sudah dibersihkan dan aman untuk disimpan di database.
+
+    **Contoh di Kode:**
+    - Pada view `add_product_entry_ajax`, data dari form yang dikirim oleh pengguna diperiksa dan disimpan ke dalam database.
+
+5. **Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step!**
+
+    **1. Membuat Fungsi untuk Menerima dan Menambahkan Data melalui AJAX**
+
+      Untuk menangani request AJAX POST, pertama kita buat fungsi `add_product_entry_ajax` di `views.py`. Fungsi ini menerima data produk yang dikirim melalui AJAX, menambahkannya ke dalam database, dan mengembalikan respons.
+
+      ```
+      @csrf_exempt
+      @require_POST
+      def add_product_entry_ajax(request):
+          product_name = request.POST.get("product_name")
+          product_description = request.POST.get("description")
+          product_price = request.POST.get("price")
+          category = request.POST.get("category")
+          topping = request.POST.get("topping")
+          size = request.POST.get("size")
+          quantity = request.POST.get("quantity")
+          user = request.user
+
+          new_product = Product(
+              item_name=product_name,
+              description=product_description,
+              price=product_price,
+              category=category,
+              topping=topping,
+              size=size,
+              quantity=quantity,
+              user=user
+          )
+
+          new_product.save()
+
+          return HttpResponse(b"CREATED", status=201)
+      ```
+
+      Fungsi ini menangkap data produk yang dikirim dari modal (seperti nama produk, deskripsi, harga, dan lain-lain), membersihkannya, lalu menambahkannya ke dalam model `Product`.
+
+      **2. Routing Fungsi di `urls.py`**
+
+      Setelah membuat fungsi untuk menambah produk melalui AJAX, tambahkan path baru di `urls.py` agar view ini dapat diakses.
+
+      ```
+      urlpatterns = [
+          ...
+          path('create-product-entry-ajax', add_product_entry_ajax, name='add_product_entry_ajax'),
+          ...
+      ]
+      ```
+
+      **3. Menampilkan Data di `main.html`**
+
+      Buat elemen HTML dalam `main.html` yang berfungsi sebagai tempat untuk menampilkan produk. Gunakan ID khusus, misalnya `product_entry_cards`, yang nantinya akan diisi oleh JavaScript secara dinamis.
+
+      ```
+      <div id="product_entry_cards"></div>
+      ```
+
+      **4. Membuat Script untuk Mengambil dan Menampilkan Data Produk**
+
+      Untuk menampilkan produk yang sudah ada, tambahkan script di `main.html` yang menggunakan `fetch` untuk mengambil data produk dari server dalam format JSON, lalu menampilkannya dalam elemen HTML yang telah dibuat.
+
+      ```
+      async function getProductEntries() {
+          return fetch("{% url 'main:show_json' %}").then((res) => res.json());
+      }
+
+      async function refreshProductEntries() {
+          document.getElementById("product_entry_cards").innerHTML = "";
+          const productEntries = await getProductEntries();
+          let htmlString = "";
+
+          if (productEntries.length === 0) {
+              htmlString = `
+                  <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+                      <p class="text-center text-gray-600 mt-4">You don't have any donuts yet.</p>
+                  </div>
+              `;
+          } else {
+              productEntries.forEach((item) => {
+                  htmlString += `
+                  <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                      <div class="p-4">
+                          <h3 class="text-xl font-semibold text-gray-800 mb-2">${item.fields.item_name}</h3>
+                          <p class="text-gray-600 mb-4">${item.fields.description}</p>
+                          <span class="font-semibold">${item.fields.price}</span>
+                      </div>
+                  </div>
+                  `;
+              });
+          }
+          document.getElementById("product_entry_cards").innerHTML = htmlString;
+      }
+      ```
+
+      **5. Membuat Modal Input di `main.html`**
+
+      Di dalam `main.html`, buat modal untuk menambah produk baru menggunakan AJAX. Modal ini memiliki form input yang mencakup nama produk, deskripsi, harga, dan lain-lain.
+
+      ```
+      <div id="crudModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50">
+          <div class="bg-white p-8 rounded-lg shadow-lg">
+              <h2>Add New Donut</h2>
+              <form id="productEntryForm">
+                  {% csrf_token %}
+                  <input type="text" name="product_name" placeholder="Product Name" required />
+                  <textarea name="description" placeholder="Description" required></textarea>
+                  <input type="number" name="price" placeholder="Price" required />
+                  <!-- Other inputs like category, topping, size, quantity -->
+                  <button type="submit">Add Donut</button>
+                  <button type="button" id="cancelButton">Cancel</button>
+              </form>
+          </div>
+      </div>
+      ```
+
+      **6. Membuat Fungsi untuk Menyembunyikan dan Menampilkan Modal**
+
+      Buat dua fungsi `showModal()` dan `hideModal()` yang digunakan untuk menampilkan dan menyembunyikan modal. Fungsi ini diaktifkan melalui tombol di halaman utama.
+
+      ```
+      function showModal() {
+          document.getElementById('crudModal').classList.remove('hidden');
+      }
+
+      function hideModal() {
+          document.getElementById('crudModal').classList.add('hidden');
+      }
+
+      document.getElementById("cancelButton").addEventListener("click", hideModal);
+      ```
+
+      **7. Menambahkan Data Produk dengan AJAX melalui Script**
+
+      Buat fungsi `addProductEntry()` untuk mengirim data produk ke server melalui AJAX POST. Setelah produk ditambahkan, modal akan tertutup dan form di-reset.
+
+      ```
+      function addProductEntry() {
+          fetch("{% url 'main:add_product_entry_ajax' %}", {
+              method: "POST",
+              body: new FormData(document.querySelector('#productEntryForm')),
+          })
+          .then(response => refreshProductEntries())
+          .catch(error => console.error('Error:', error));
+
+          document.getElementById("productEntryForm").reset(); 
+          hideModal();
+          
+          return false;
+      }
+      ```
+
+    **8. Menambahkan Event Listener untuk Submit Form**
+
+      Tambahkan event listener pada form modal agar menangani submit form dan memanggil `addProductEntry()`.
+
+      ```
+      document.getElementById("productEntryForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          addProductEntry();
+      });
+      ```
+
 

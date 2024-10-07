@@ -3,6 +3,7 @@
 
 {% block meta %}
 <title>Doughsy</title>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 {% endblock meta %}
 
@@ -21,30 +22,205 @@
     <!-- Featured Donuts Section -->
     <section id="featured-donuts" class="py-16 bg-[#FFF1D3]">
         <div class="container mx-auto px-4">
-          <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold">Here’s a quick glance at your ordered donuts</h1>
-            <p class="text-xl text-gray-600 mt-2">Craving for more? Add new ones anytime!</p>
-          </div>
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold">Here’s a quick glance at your ordered donuts</h1>
+                <p class="text-xl text-gray-600 mt-2">Craving for more? Add new ones anytime!</p>
+            </div>
             
-            {% if donut_entries %}
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                    {% for donut in donut_entries %}
-                        <div class="p-0 m-0 w-full">
-                            {% include 'card_donut.html' with donut=donut %}
+
+            <div id="product_entry_cards"></div>
+            <!-- Add new donut modal -->
+            <div id="crudModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto transition-opacity duration-300 ease-out">
+                <div id="crudModalContent" class="relative max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl transform scale-95 opacity-0 transition-transform transition-opacity duration-300 ease-out">
+                    <div class="md:flex">
+                        <div class="p-8 w-full">
+                            <div class="uppercase tracking-wide text-sm text-pink-500 font-semibold mb-1">New Creation</div>
+                            <h1 class="block mt-1 text-lg leading-tight font-medium text-black">Add New Donut</h1>
+                            <p class="mt-2 text-gray-500">Fill in the details to add a delicious new donut to your menu.</p>
+                            <form id="productEntryForm" class="mt-6 space-y-4">
+                                {% csrf_token %}
+                                <!-- Product Name Input -->
+                                <div class="mb-4">
+                                    <label for="productName" class="block text-sm font-medium text-gray-700">Item name</label>
+                                    <div class="mt-1">
+                                        <input type="text" id="productName" name="product_name" class="block w-full border border-gray-300 rounded-md p-2" placeholder="Enter product name" required>
+                                    </div>
+                                </div>
+                                <!-- Category Input -->
+                                <div class="mb-4">
+                                    <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                                    <div class="mt-1">
+                                        <select id="category" name="category" class="block w-full border border-gray-300 rounded-md p-2" required>
+                                            <option value="Donut">Donut</option>
+                                            <option value="Cheesecake">Cheesecake</option>
+                                            <option value="Cookies">Cookies</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Price Input -->
+                                <div class="mb-4">
+                                    <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                                    <div class="mt-1">
+                                        <input type="number" id="price" name="price" class="block w-full border border-gray-300 rounded-md p-2" min="0" placeholder="Enter price" required>
+                                    </div>
+                                </div>
+                                <!-- Topping Input -->
+                                <div class="mb-4">
+                                    <label for="topping" class="block text-sm font-medium text-gray-700">Topping</label>
+                                    <div class="mt-1">
+                                        <input type="text" id="topping" name="topping" class="block w-full border border-gray-300 rounded-md p-2" placeholder="Enter topping" required>
+                                    </div>
+                                </div>
+                                <!-- Size Input -->
+                                <div class="mb-4">
+                                    <label for="size" class="block text-sm font-medium text-gray-700">Size</label>
+                                    <div class="mt-1">
+                                        <select id="size" name="size" class="block w-full border border-gray-300 rounded-md p-2" required>
+                                            <option value="S">Small</option>
+                                            <option value="M">Medium</option>
+                                            <option value="L">Large</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Quantity Input -->
+                                <div class="mb-4">
+                                    <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+                                    <div class="mt-1">
+                                        <input type="number" id="quantity" name="quantity" min="1" class="block w-full border border-gray-300 rounded-md p-2" required>
+                                    </div>
+                                </div>
+                                <!-- Description Input -->
+                                <div class="mb-4">
+                                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                                    <div class="mt-1">
+                                        <textarea id="description" name="description" rows="3" class="block w-full border border-gray-300 rounded-md p-2 resize-none" placeholder="Describe the donut" required></textarea>
+                                    </div>
+                                </div>
+                                <!-- Modal Footer -->
+                                <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2 p-6 border-t border-gray-200 rounded-b justify-center md:justify-end">
+                                    <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg" id="cancelButton">Cancel</button>
+                                    <button type="submit" id="submit" form="productEntryForm" class="bg-[#CE1B5A] hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg">Add Donut</button>
+                                </div>
+                            </form> 
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
-            {% else %}
-                <div class="flex flex-col items-center">
-                    <img src="{% static 'images/no-donuts.png' %}" alt="No Donuts" class="h-15 w-10 mb-4"/> <!-- Pastikan path gambar benar -->
-                    <p class="text-center text-gray-500 text-lg">You don't have any donuts yet.</p>
-                </div>
-            {% endif %}
-            
-            <div class="text-center bg-[#FFF1D3]  mt-12">
-                <a href="{% url 'main:create_product_entry' %}" class="bg-[#CE1B5A] text-white py-3 px-8 rounded-full text-lg font-semibold hover:bg-pink-600 transition duration-300">Add New Donut</a>
+            </div>
+            <div class="text-center bg-#CE1B5A mt-12">
+                <a href="{% url 'main:create_product_entry' %}" class="bg-[#e1769c] hover:bg-[#CE1B5A]-400 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mx-4">
+                    Add New Donut
+                </a>
+                <button data-modal-target="crudModal" data-modal-toggle="crudModal" class="btn bg-[#CE1B5A] hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105" onclick="showModal();">
+                    Add New Donut by AJAX
+                </button>
             </div>
         </div>
     </section>
 </div>
+<script>
+
+    async function getProductEntries(){
+        return fetch("{% url 'main:show_json' %}").then((res) => res.json());
+    }
+
+    async function refreshProductEntries() {
+        document.getElementById("product_entry_cards").innerHTML = "";
+        document.getElementById("product_entry_cards").className = "";
+        const productEntries = await getProductEntries();
+        let htmlString = "";
+        let classNameString = "";
+
+        if (productEntries.length === 0) {
+            classNameString = "flex flex-col items-center justify-center min-h-[24rem] p-6";
+            htmlString = `
+                <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+                    <img src="{% static 'images/no-donuts.png' %}" alt="No Donuts" class="w-20 h-25 mb-4"/>
+                    <p class="text-center text-gray-600 mt-4">You don't have any donuts yet.</p>
+                </div>
+            `;
+        } else {
+            classNameString = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 w-full";
+            productEntries.forEach((item) => {
+                const item_name = DOMPurify.sanitize(item.fields.item_name);
+                const price = DOMPurify.sanitize(item.fields.price);
+                const description = DOMPurify.sanitize(item.fields.description);
+                const topping = DOMPurify.sanitize(item.fields.topping);
+                const quantity = DOMPurify.sanitize(item.fields.quantity);
+                htmlString += `
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+                    <div class="relative pb-2/3">
+                        <div class="absolute top-0 right-0 bg-yellow-400 text-gray-900 px-3 py-1 m-2 rounded-full text-sm font-semibold">
+                            $${price}
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">${item_name}</h3>
+                        <p class="text-gray-600 mb-4">${description.length > 100 ? description.substring(0, 100) + '...' : item.fields.description}</p>
+                        <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
+                            <span>Topping: <span class="font-semibold">${topping}</span></span>
+                            <span>Qty: <span class="font-semibold">${quantity}</span></span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <a href="/edit-product/${item.pk}" class="flex-1 bg-blue-500 text-white text-center py-2 rounded-md hover:bg-blue-600 transition duration-300">Edit</a>
+                            <a href="/delete/${item.pk}" onclick="return confirm('Are you sure you want to delete this item?');" class="flex-1 bg-red-500 text-white text-center py-2 rounded-md hover:bg-red-600 transition duration-300">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+        }
+        document.getElementById("product_entry_cards").className = classNameString;
+        document.getElementById("product_entry_cards").innerHTML = htmlString;
+    }
+
+    const modal = document.getElementById('crudModal');
+    const modalContent = document.getElementById('crudModalContent');
+
+    // Function to show the modal
+    function showModal() {
+        const modal = document.getElementById('crudModal');
+        const modalContent = document.getElementById('crudModalContent');
+
+        modal.classList.remove('hidden'); 
+        setTimeout(() => {
+            modalContent.classList.remove('opacity-0', 'scale-95');
+            modalContent.classList.add('opacity-100', 'scale-100');
+        }, 50); 
+    }
+
+    // Function to hide the modal
+    function hideModal() {
+        const modal = document.getElementById('crudModal');
+        const modalContent = document.getElementById('crudModalContent');
+
+        modalContent.classList.remove('opacity-100', 'scale-100');
+        modalContent.classList.add('opacity-0', 'scale-95');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 150); 
+    }
+
+    function addProductEntry() {
+        fetch("{% url 'main:add_product_entry_ajax' %}", {
+        method: "POST",
+        body: new FormData(document.querySelector('#productEntryForm')),
+        })
+        .then(response => refreshProductEntries())
+
+        document.getElementById("productEntryForm").reset(); 
+        hideModal();
+
+        return false;
+  }
+
+    // Event listeners
+    document.getElementById("cancelButton").addEventListener("click", hideModal);
+    document.getElementById("productEntryForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        addProductEntry();
+    })
+    refreshProductEntries();
+
+</script>
 {% endblock content %}

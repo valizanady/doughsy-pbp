@@ -10,6 +10,7 @@
       <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
           <span>Topping: <span class="font-semibold">{{ donut.topping }}</span></span>
           <span>Qty: <span class="font-semibold">{{ donut.quantity }}</span></span>
+          
       </div>
       <div class="flex space-x-2">
           <a href="{% url 'main:edit_product' donut.pk %}" class="flex-1 bg-blue-500 text-white text-center py-2 rounded-md hover:bg-blue-600 transition duration-300">Edit</a>
