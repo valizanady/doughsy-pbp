@@ -3,8 +3,8 @@
 
 {% block meta %}
 <title>Doughsy</title>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
 {% endblock meta %}
 
 {% block content %}
@@ -38,7 +38,6 @@
                             <h1 class="block mt-1 text-lg leading-tight font-medium text-black">Add New Donut</h1>
                             <p class="mt-2 text-gray-500">Fill in the details to add a delicious new donut to your menu.</p>
                             <form id="productEntryForm" class="mt-6 space-y-4">
-                                {% csrf_token %}
                                 <!-- Product Name Input -->
                                 <div class="mb-4">
                                     <label for="productName" class="block text-sm font-medium text-gray-700">Item name</label>

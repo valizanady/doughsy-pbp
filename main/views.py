@@ -43,11 +43,11 @@ def create_product_entry(request):
 def add_product_entry_ajax(request):
     product_name = strip_tags(request.POST.get("product_name"))
     product_description = strip_tags(request.POST.get("description"))
-    product_price = strip_tags(request.POST.get("price"))
+    product_price = request.POST.get("price")
     category = strip_tags(request.POST.get("category"))
     topping = strip_tags(request.POST.get("topping"))
     size = strip_tags(request.POST.get("size"))
-    quantity = strip_tags(request.POST.get("quantity"))
+    quantity = request.POST.get("quantity")
     user = request.user
 
     # Creating a new product entry
