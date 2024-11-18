@@ -12,6 +12,8 @@ from main.models import Product
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
+import json
+from django.http import JsonResponse
 
 @login_required(login_url='/login')
 def show_main(request):
@@ -135,5 +137,57 @@ def delete_product(request, id):
 
     return HttpResponseRedirect(reverse('main:show_main'))
 
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
 
+        # Assuming the user must be authenticated to add a product
+        if not request.user.is_authenticated:
+            return JsonResponse({"status": "error", "message": "User must be authenticated."}, status=403)
 
+        try:
+            new_product = Product.objects.create(
+                user=request.user,  # Ensure the user field exists in your model
+                item_name=data["item_name"],
+                category=data["category"],
+                topping=data["topping"],
+                size=data["size"],
+                quantity=int(data["quantity"]),
+                price=float(data["price"]),
+                description=data["description"]
+            )
+            new_product.save()
+
+            return JsonResponse({"status": "success"}, status=200)
+        except KeyError as e:
+            return JsonResponse({"status": "error", "message": f"Missing field: {str(e)}"}, status=400)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
+
+@login_required
+def get_user_products(request):
+    products = Product.objects.filter(user=request.user)
+    products_data = list(products.values('id', 'item_name', 'price', 'description'))
+    return JsonResponse(products_data, safe=False)
+
+@login_required
+def get_product_detail(request, id):
+    try:
+        product = Product.objects.get(pk=id, user=request.user)
+        product_data = {
+            'id': str(product.id),  # Convert UUID if necessary
+            'item_name': product.item_name,
+            'price': product.price,
+            'description': product.description,
+            'category': product.category,
+            'topping': product.topping,
+            'size': product.size,
+            'availability': product.availability,
+            'quantity': product.quantity,
+        }
+        return JsonResponse(product_data)
+    except Product.DoesNotExist:
+        return JsonResponse({"error": "Product not found"}, status=404)

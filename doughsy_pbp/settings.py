@@ -27,9 +27,9 @@ SECRET_KEY = 'django-insecure-@2*nh*=g*@epa#o8@$ib@)ts%2t$@i*)(ft87u&y=c)xco(x3x
 PRODUCTION = os.getenv("PRODUCTION", False)
 DEBUG = not PRODUCTION
 
-...
+
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "valiza-nadya-doughsy.pbp.cs.ui.ac.id"]
-...
+
 
 
 # Application definition
@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main'
+    'main',
+    'authentication', 
+    'corsheaders',  
 ]
 
 MIDDLEWARE = [
@@ -53,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'doughsy_pbp.urls'
@@ -72,6 +75,13 @@ TEMPLATES = [
         },
     },
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
 
 WSGI_APPLICATION = 'doughsy_pbp.wsgi.application'
 
